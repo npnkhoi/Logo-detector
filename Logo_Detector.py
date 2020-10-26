@@ -36,11 +36,11 @@ MODEL_PATH = "efficient_net_v3.h5"
 
 if __name__ == "__main__":
 	model = load_model(MODEL_PATH)
-	log_filename = get_current_time(filename=True) + ".txt"
+	log_filename = "Logs\\" + get_current_time(filename=True) + ".txt"
 	with open(log_filename, "w+") as log_file:
 		count_total = 0
 		count_ng = 0
-		print("Logo detector")
+		print("FULBRIGHT LOGO DETECTOR")
 
 		while True:
 			print("="*79)

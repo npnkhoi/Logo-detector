@@ -1,0 +1,6 @@
+__pycache__/
+archive/
+images/
+data/
+logs/
+efficient_net_v3.h5

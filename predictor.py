@@ -10,7 +10,10 @@ import matplotlib.pyplot as plt
 
 
 def start_crop(img, h, w):
+  print("call start_crop")
   edge = cv2.Canny(img.astype(np.uint8), 50, 60)
+  # plt.imshow(edge)
+  plt.show()
   whole_area = h * w
   count_all = np.count_nonzero(edge)
   thick_area = h * 5
@@ -28,9 +31,12 @@ def crop_center(img):
   w = img.shape[1]
   upper_bound = start_crop(img, h, w)
   if (h > w):
-      return img[(upper_bound) : (upper_bound + w), :, :]
+      img = img[(upper_bound) : (upper_bound + w), :, :]
   else:
-      return img[:, (upper_bound) : (upper_bound + h), :]
+      img = img[:, (upper_bound) : (upper_bound + h), :]
+  # plt.imshow(img)
+  plt.show()
+  return img
 
 def predict(model, img_dir):
   test_tensor = plt.imread(img_dir)
