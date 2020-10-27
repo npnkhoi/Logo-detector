@@ -4,10 +4,12 @@ Backend of the system
 	between camera, models and frontend
 """
 
-from models.bottle import predict as is_bottle_visible
+from models.detect_bottle import detect_bottle as is_bottle_visible
 from models.logo import predict as is_logo_visible
 from time import sleep
-import cv2 
+from datetime import datetime
+import cv2
+from keras.models import load_model
 
 INTERVAL = 200 # 200 miliseconds as system's interval
 
@@ -17,28 +19,30 @@ def detect_logo():
 	- Record in log file
 	- Send request to Frontend (by creating new file)
 	"""
+MODEL_NAME = "models\\efficient_net_v3.h5"
 
 if __name__ == "__main__":
+	model = load_model(MODEL_NAME)
 	vid = cv2.VideoCapture(0) 
 	while True:
-		# get an image, show it out
-
 		# Capture the video frame by frame 
 		ret, frame = vid.read()
 		# Display the resulting frame
 		cv2.imshow('frame', frame)
-		print(type(frame))
+		# print(type(frame))
 
 		if cv2.waitKey(1) & 0xFF == ord('q'):
 			break
-
+		
+		print('Time:', str(datetime.now()))
 		if is_bottle_visible(frame):
 			print("Bottle visible? YES!")
-			detect_logo()
+			if is_logo_visible(model, frame):
+				print('OK')
+				
+			else:
+				print('NG')
 			# TODO: notify Frontend about the bottle's appearance
-			
-			# wait until new bottle appears
-			sleep(3000)
 		else:
 			print("Bottle visible? NO ...")
 

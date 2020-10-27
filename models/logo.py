@@ -27,13 +27,14 @@ def crop_center(img):
   else:
       img = img[:, (upper_bound) : (upper_bound + h), :]
   # plt.imshow(img)
-  plt.show()
+  # plt.show()
   return img
 
-def predict(model, img_dir):
-  test_tensor = plt.imread(img_dir)
+def predict(model, test_tensor):
   test_tensor = cv2.resize(crop_center(test_tensor), (380, 380))
   test_batch = test_tensor.reshape([1] + list(test_tensor.shape))
   predict_arr = model.predict(test_batch)
   predict = np.argmax(predict_arr[0])
   return predict == 1
+
+# if __name__ == "__main__":

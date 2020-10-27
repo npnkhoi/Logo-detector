@@ -1,6 +1,6 @@
 import cv2 as cv
 
-def detect_bottle(url, 
+def detect_bottle(im, 
                   thresh_low=90, 
                   thresh_high=200, 
                   contour_cutoff=300, 
@@ -17,7 +17,7 @@ def detect_bottle(url,
     Return:
         - True if a bottle is detected, False otherwise.
     """
-    im = cv.imread(url, cv.IMREAD_GRAYSCALE)
+    im = cv.cvtColor(im, cv.COLOR_BGR2GRAY)
     _, thresh = cv.threshold(im, thresh_low, thresh_high, 0)
     contours, _ = cv.findContours(thresh, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
 
