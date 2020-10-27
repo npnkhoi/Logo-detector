@@ -1,19 +1,14 @@
+"""
+Command line interface used in Round 1
+"""
+
 import glob
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' 
 from datetime import datetime
 from keras.models import load_model
-from predictor import predict
+from logo import predict
 
-# from keras.utils.np_utils import to_categorical
-# from keras.models import Sequential, load_model
-# from keras.layers import Dense, Conv2D, MaxPool2D, Dropout, Flatten, BatchNormalization
-# from keras.optimizers import Adam
-# from keras.preprocessing.image import ImageDataGenerator
-# from keras.callbacks import ReduceLROnPlateau
-
-# def predict(pathname):
-# 	return "NG"
 
 def get_current_time(filename=False):
 	now = datetime.now()

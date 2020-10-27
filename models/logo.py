@@ -1,16 +1,8 @@
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
-# from keras.utils.np_utils import to_categorical
-# from keras.models import Sequential, load_model
-# from keras.layers import Dense, Conv2D, MaxPool2D, Dropout, Flatten, BatchNormalization
-# from keras.optimizers import Adam
-# from keras.preprocessing.image import ImageDataGenerator
-# from keras.callbacks import ReduceLROnPlateau
-
 
 def start_crop(img, h, w):
-  print("call start_crop")
   edge = cv2.Canny(img.astype(np.uint8), 50, 60)
   # plt.imshow(edge)
   plt.show()
@@ -44,4 +36,4 @@ def predict(model, img_dir):
   test_batch = test_tensor.reshape([1] + list(test_tensor.shape))
   predict_arr = model.predict(test_batch)
   predict = np.argmax(predict_arr[0])
-  return "OK" if predict == 1 else "NG"
+  return predict == 1
