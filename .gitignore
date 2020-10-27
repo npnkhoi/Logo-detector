@@ -3,5 +3,6 @@ archive/
 images/
 data/
 logs/
+darknet/
 Real-Time-Object-Detection-using-YOLO-v3/
 efficient_net_v3.h5
