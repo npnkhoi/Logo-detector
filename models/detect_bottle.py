@@ -26,8 +26,8 @@ def detect_bottle(url,
     except:
         pass
 
-    cmax = max(contours, key = cv2.contourArea)
-    x, y, w, h = cv2.boundingRect(cmax)
+    cmax = max(contours, key=cv.contourArea)
+    x, y, w, h = cv.boundingRect(cmax)
     
     #==========================================================================
     # CODE FOR SHOWIMG IMAGE & CALIBRATNG
@@ -39,3 +39,7 @@ def detect_bottle(url,
         return True
     else:
         return False
+
+if __name__ == "__main__":
+    img_path = "..\\images\\white-background-2.jpg"
+    print(detect_bottle(img_path))
