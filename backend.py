@@ -1,14 +1,15 @@
 """
 Script to facilitate data flow between camera, models and frontend.
 
-Usage:
+For user:
 - Press 'C' to detect logo on a passing bottle (manual mode)
 - Press 'Q' to exit the program
 
-Installations:
+For dev:
 - `pip install` all the packages
 - create a folder named `Logs\\` in the same level as this file
 - make sure the model 'efficient_net_v3.h5' is put in 'models\\' folder
+- You can either choose to detect the bottle manually or automatically by changing the constant `MANUAL`
 """
 
 from models.detect_bottle import detect_bottle
@@ -23,6 +24,7 @@ from copy import deepcopy
 # CONSTANTS =========================================================================
 
 MODEL_PATH = "models\\efficient_net_v3.h5"
+MANUAL = False
 
 model = load_model(MODEL_PATH)
 vid = cv2.VideoCapture(0) # PRODUCTION: maybe change 0 to 1
@@ -109,7 +111,7 @@ if __name__ == "__main__":
 			break
 		
 		# if keyboard.is_pressed('c'):
-		if is_bottle_visible(image, manual=False):
+		if is_bottle_visible(image, manual=MANUAL):
 			print('Bottle is passing')
 			detect_logo(model, image, now)
 	
