@@ -4,7 +4,7 @@ def detect_bottle(im,
                   thresh_low=90, 
                   thresh_high=200,
                   contour_cutoff=300, 
-                  thresh_label_size=280,
+                  thresh_label_size=100,
                   contours_to_check=10):
     """
     Detects whether a bottle is present.
@@ -26,10 +26,10 @@ def detect_bottle(im,
     _, thresh = cv.threshold(im, thresh_low, thresh_high, 0)
     contours, _ = cv.findContours(thresh, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
 
-    print(len(contours))
-    contours.sort(key=cv.contourArea)
+    # print(len(contours))
     if len(contours) == 0:
         return False
+    contours.sort(key=cv.contourArea)
 
     i = len(contours) - 1
     while i >= 0 and contours_to_check > 0:
@@ -38,7 +38,7 @@ def detect_bottle(im,
         # cv.rectangle(im,(x,y),(x+w,y+h),(0,255,0),2)
         # cv.imwrite('temp.jpg', im)
 
-        if w < im.shape[1] / 3:
+        if w < im.shape[1] / 2:
             contours_to_check -= 1
             if bottle_found(x, y, w, h):
                 return True

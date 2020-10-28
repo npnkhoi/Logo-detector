@@ -20,17 +20,34 @@ from keras.models import load_model
 import keyboard
 from copy import deepcopy
 
+# CONSTANTS =========================================================================
+
+MODEL_PATH = "models\\efficient_net_v3.h5"
+
+model = load_model(MODEL_PATH)
+vid = cv2.VideoCapture(0) # PRODUCTION: maybe change 0 to 1
+is_bottle_passing = False
+count_ng = 0
+count_ok = 0
+last_bottle_status = False
+
 # FUNCTIONS ===================================================================
 
-def is_bottle_visible(key_pressed, img, method):
+def is_bottle_visible(img, manual):
 	"""
 	MANUAL: pressing 'C' to notify that a bottle is going through
 	AUTO: using ML to detect
 	"""
-	if method == 'MANUAL':
-		return key_pressed == 'c'
+	if manual:
+		return keyboard.is_pressed('c')
 	else:
-		return detect_bottle(img)
+		visible = detect_bottle(img)
+		global last_bottle_status
+		if visible != last_bottle_status:
+			last_bottle_status = visible
+			return visible
+		else:
+			return False
 
 def detect_logo(model, image, time):
 	"""
@@ -79,20 +96,9 @@ def save_ng(log_path, image_path, time):
 		Filename: " + image_path + "\n"
 		file.write(report)
 
-
-# CONSTANTS =========================================================================
-
-MODEL_PATH = "models\\efficient_net_v3.h5"
-LOG_PATH = "Logs\\" + format_time(datetime.now(), 2) + ".txt"
-METHOD = "MANUAL"
-
-model = load_model(MODEL_PATH)
-vid = cv2.VideoCapture(0) # PRODUCTION: maybe change 0 to 1
-is_bottle_passing = False
-count_ng = 0
-count_ok = 0
-
 # MAIN  ================================================================================
+
+LOG_PATH = "Logs\\" + format_time(datetime.now(), 2) + ".txt"
 
 if __name__ == "__main__":
 	open(LOG_PATH, 'w+')
@@ -101,8 +107,9 @@ if __name__ == "__main__":
 		image = get_frame(vid)
 		if cv2.waitKey(1) & 0xFF == ord('q'):
 			break
-
-		if keyboard.is_pressed('c'):
+		
+		# if keyboard.is_pressed('c'):
+		if is_bottle_visible(image, manual=False):
 			print('Bottle is passing')
 			detect_logo(model, image, now)
 	
