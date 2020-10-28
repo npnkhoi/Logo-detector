@@ -1,55 +1,79 @@
 """
-Backend of the system
-	facilitate the data flow 
-	between camera, models and frontend
+Backend -- facilitate data flow between camera, models and frontend
 """
 
-from models.detect_bottle import detect_bottle as is_bottle_visible
+from models.detect_bottle import detect_bottle
 from models.logo import predict as is_logo_visible
 from time import sleep
 from datetime import datetime
 import cv2
 from keras.models import load_model
+import keyboard
 
-INTERVAL = 200 # 200 miliseconds as system's interval
+# FUNCTIONS ===================================================================
 
-def detect_logo():
+def is_bottle_visible(key_pressed, img, method):
+	"""
+	MANUAL: pressing 'C' to notify that a bottle is going through
+	AUTO: using ML to detect
+	"""
+	if method == 'MANUAL':
+		return key_pressed == 'c'
+	else:
+		return detect_bottle(img)
+
+def detect_logo(model, image):
 	"""
 	Detect logo on the bottle
 	- Record in log file
 	- Send request to Frontend (by creating new file)
 	"""
-MODEL_NAME = "models\\efficient_net_v3.h5"
+	verdict = is_logo_visible(model, image)
+	print('OK' if verdict else 'NG')
+	global count_ok, count_ng
+	if verdict:
+		count_ok += 1
+	else:
+		count_ng += 1
+
+def get_frame(vid):
+	ret, frame = vid.read()
+	font = cv2.FONT_HERSHEY_SIMPLEX
+	cv2.putText(frame, now.strftime("%d/%m/%Y %H:%M:%S.%f"), (20, 20), font, 0.5, (0, 0, 0), 2)
+	cv2.putText(frame, 'Total: ' + str(count_ok + count_ng), (20, 40), font, 0.5, (0, 0, 0), 2)
+	cv2.putText(frame, 'OK: ' + str(count_ok), (20, 60), font, 0.5, (0, 255, 0), 2)
+	cv2.putText(frame, 'NG: ' + str(count_ng), (20, 80), font, 0.5, (0, 0, 255), 2)
+	cv2.imshow('frame', frame)
+	return frame
+
+def destroy_cam():
+	vid.release() 
+	cv2.destroyAllWindows() 
+
+
+# CONSTANTS =========================================================================
+
+MODEL_PATH = "models\\efficient_net_v3.h5"
+METHOD = "MANUAL"
+
+model = load_model(MODEL_PATH)
+vid = cv2.VideoCapture(0) 
+is_bottle_passing = False
+count_ng = 0
+count_ok = 0
+
+# MAIN  ================================================================================
 
 if __name__ == "__main__":
-	model = load_model(MODEL_NAME)
-	vid = cv2.VideoCapture(0) 
-	while True:
-		# Capture the video frame by frame 
-		ret, frame = vid.read()
-		# Display the resulting frame
-		cv2.imshow('frame', frame)
-		# print(type(frame))
 
+	while True:
+		now = datetime.now()
+		image = get_frame(vid)
 		if cv2.waitKey(1) & 0xFF == ord('q'):
 			break
-		
-		print('Time:', str(datetime.now()))
-		if is_bottle_visible(frame):
-			print("Bottle visible? YES!")
-			if is_logo_visible(model, frame):
-				print('OK')
-				
-			else:
-				print('NG')
-			# TODO: notify Frontend about the bottle's appearance
-		else:
-			print("Bottle visible? NO ...")
 
-		# WARNING: system interval = INTERVAL 
-		# + time wait for new bottle + processing time
+		if keyboard.is_pressed('c'):
+			print('Bottle is passing')
+			detect_logo(model, image)
 	
-	# After the loop release the cap object 
-	vid.release() 
-	# Destroy all the windows 
-	cv2.destroyAllWindows() 
+	destroy_cam()
